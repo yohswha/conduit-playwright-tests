@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import tags from '../test-data/tags.json'
-import { getCredentials } from './helpers/credentials';
+import { getAuthToken } from './helpers/auth';
 
 
 //TEST CASES
@@ -32,19 +32,7 @@ test('has the correct title', async ({ page }) => {
 
 //this test creates an article and deletes it to keep the test environment clean, it does not use api resquest for deleting the article, it uses the UI to delete the article
 test.skip('Delete an article', async ({ page, request }) => {
-    const { email, password } = getCredentials();
-
-    const loginResponse = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
-        data: {
-            user: {
-                "email": email,
-                "password": password
-            }
-        }
-    });
-    expect(loginResponse.status()).toEqual(200)
-    const responseLoginJson = await loginResponse.json()
-    const token = responseLoginJson.user.token
+    const token = await getAuthToken();
 
     const newArticleResponse = await request.post('https://conduit-api.bondaracademy.com/api/articles/', {
         headers: {
@@ -72,18 +60,8 @@ test.skip('Delete an article', async ({ page, request }) => {
 
 //this test creates an article and deletes it to keep the test environment clean
 test('Create an article and delete it to keep the test environment clean', async ({ page, request }) => {
-    const { email, password } = getCredentials();
-    const loginResponse = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
-        data: {
-            user: {
-                email,
-                password
-            }
-        }
-    });
-    expect(loginResponse.status()).toEqual(200)
-    const responseLoginJson = await loginResponse.json()
-    const token = responseLoginJson.user.token
+   
+   const token = await getAuthToken();
 
 
     const newArticleResponse = await request.post('https://conduit-api.bondaracademy.com/api/articles/', {
